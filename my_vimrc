@@ -1,6 +1,17 @@
 set termencoding=&encoding
 set fileencodings=utf-8,gbk
 
+if &t_Co >2 || has("gui_running")
+        syntax on
+        set hlsearch
+endif
+
+if &term=="xterm"
+        set t_Co=8
+        set t_Sb=^[[4%dm
+        set t_Sf=^[[3%dm
+endif
+
 "set fileencodings=gb2312,gb18030,utf-8
 "set termencoding=utf-8
 "set encoding=prc 
@@ -24,41 +35,50 @@ Plugin 'gmarik/vundle'
 "Plugin 'tpope/vim-rails.git'
 "格式2：vim-scripts里面的仓库，直接打仓库名即可。
 Plugin 'scrooloose/nerdtree'
-Plugin 'a.vim'
 Plugin 'Tagbar'
 Plugin 'fholgado/minibufexpl.vim'
 Plugin 'OmniCppComplete'
-Plugin 'mbbill/echofunc'
 Plugin 'kien/ctrlp.vim'
 Plugin 'grep.vim'
 Plugin 'tomasr/molokai'
 Plugin 'ervandew/supertab'
 Plugin 'bling/vim-airline'
 Plugin 'terryma/vim-multiple-cursors'
+" Plugin 'mbbill/echofunc'
 
 "格式3：非Github的Git仓库
 "Plugin 'git://vim-latex.git.sourceforge.net/gitroot/vim-latex/vim-latex'
 
 "最后在所有Plugin命令后面加上文件类型检测：
 filetype plugin indent on
-
-" ctags
-nmap ct :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
-
-" cscope
-" cscope -Rbq [-f path/xxx.out] build the database
-nmap ca :cs add cscope.out .<CR>
-:set cscopequickfix=s-,c-,d-,i-,t-,e-
+" Tagbar
+" autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.C call tagbar#OpenWindow
+let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
+let g:tagbar_autoclose=1
+let g:tagbar_width=30
+let g:tagbar_autofocus = 1
+map tb :TagbarToggle<CR>
 
 " MiniBufExplorer
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplMapWindowNavArrows = 1
-let g:miniBufExplMapCTabSwitchBufs = 1
+let g:miniBufExplMapWindowNavVim = 1 
+let g:miniBufExplMapWindowNavArrows = 1 
+let g:miniBufExplMapCTabSwitchBufs = 1 
 let g:miniBufExplModSelTarget = 1
-let g:miniBufExplMoreThanOne=0
+let g:miniBufExplMoreThanOne = 0
 
 " NERDTree
 let g:NERDTree_title="[NERDTree]"
+"let g:winManagerWindowLayout="NERDTree|TagBar"
+
+function! NERDTree_Start()
+    exec 'NERDTree'
+endfunction
+
+function! NERDTree_IsValid()
+    return 1  
+endfunction
+ map nt :NERDTreeToggle<CR> 
+
 let NERDTreeQuitOnOpen=1 "打开文件时关闭树
 let NERDTreeShowBookmarks=1 "显示书签
 let NERDTreeChDirMode=2  "选中root即设置为当前目录
@@ -66,77 +86,76 @@ let NERDTreeQuitOnOpen=1 "打开文件时关闭树
 let NERDTreeMinimalUI=1 "不显示帮助面板
 let NERDTreeDirArrows=0 "目录箭头 1 显示箭头  0传统+-|号
 
-function! NERDTree_Start()
-    exec 'NERDTree'
-endfunction
-     
-function! NERDTree_IsValid()
-    return 1
-endfunction
-
-nmap nt :NERDTreeToggle<CR>
-
 " OmniCppComplete
 set nocp
 filetype plugin on
-
-" (选择颜色主题为 molokai , 就是 ~/.vim/colors/molokai.vim文件)
-colo molokai   
-" color scheme (双引号开头的行表示注释)
-"  (设置终端支持的颜色是256颜色，这句特别重要，谨记)
-set t_Co=256
-" hilight function name
-" (上面两行为了匹配函数名的，为下面的给函数名定义颜色做准备)
-autocmd BufNewFile,BufRead * :syntax match cfunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
-autocmd BufNewFile,BufRead * :syntax match cfunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
-" (这一行就是给函数名加颜色的)
-hi cfunctions ctermfg=81
-
-" (设置光标行，效果相当棒，光标移到哪一行，哪一行的行号就变成了浅黄色，相当的动感)
-set cursorline
-
-
-" a.vim
-let g:alternateExtensions_cc = "h"
-let g:alternateExtensions_h = "c"
-let g:alternateExtensions_h = "C"
-let g:alternateExtensions_C = "h"
-let g:alternateExtensions_h = "cpp"
-let g:alternateExtensions_cpp = "h"
+set completeopt=menu,longest
 
 " fold
 set foldmethod=syntax
-set foldlevel=100  " 启动 vim 时不要自动折叠代码
+set foldlevel=100
 
-" Tagbar
-autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.C call tagbar#OpenWindow() 
-let g:tagbar_width = 30
-nmap tb :TagbarToggle<CR>
+"set cscopeprg=gtags-cscope
+set csprg=/usr/local/bin/gtags-cscope
+"nmap ct :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+nmap ct :!find . -name "*.[C h]" > gtags.files & gtags 
+set nocst
+nmap <C-[>s :cs find s <C-R>=expand("<cword>")<CR><CR>
+nmap <C-[>g :cs find g <C-R>=expand("<cword>")<CR><CR>
+nmap <C-[>c :cs find c <C-R>=expand("<cword>")<CR><CR>
+nmap <C-[>t :cs find t <C-R>=expand("<cword>")<CR><CR>
+nmap <C-[>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
+nmap <C-[>d :cs find d <C-R>=expand("<cword>")<CR><CR>
+set csto=0
+" set cst
+set nocsverb
+set cscopequickfix=s-,c-,d-,i-,t-,e-
+if filereadable("GTAGS")
+    cs add GTA<C-w k>S
+endif
+set csverb
 
-" mouse
-" :set mouse=a
+" color scheme
+set t_Co=256
+colo molokai
+let g:molokai_original = 1
+let g:rehash256 = 1
+" hilight function name
+autocmd BufNewFile,BufRead * :syntax match cfunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2 
+autocmd BufNewFile,BufRead * :syntax match cfunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
+set runtimepath^=~/.vim/bundle/ctrlp/bundle/ctrlp.vim
+hi cfunctions ctermfg=81
+set cursorline
+
+let g:ctrlp_match_window ='bottom,order:btt,min:1,max:15,results:100'
 
 " grep
 let Grep_Default_Filelist = '*.c *.cpp *.cc *.C *.h *.hpp *.asm'
 let Grep_Skip_Files = '*.bak *~ tags .out'
 
-" superTab
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
-" tab 
-:set softtabstop=4
-" :set tabstop=4
+" airline
+let g:airline#extensions#whitespace#enabled = 0
+set laststatus=2
+let g:airline_theme='dark'
+
+:set tabstop=4
 :set expandtab
 autocmd FileType make set noexpandtab
 
-" airline
-set t_Co=256
-set laststatus=2
-let g:airline#extensions#whitespace#enabled = 0
+imap <C-b> <C-x><C-p>
+map <C-Left> :bp<CR>
+map <C-Right> :bn<CR>
+map <s-h> :bp<CR>
+map <s-l> :bn<CR>
 
-noremap <C-Right> :bn<CR>
-noremap <C-Left> :bp<CR>
-map <C-j> <C-w>j <CR>
-map <C-k> <C-w>k <CR>
-map <C-h> <C-w>h <CR>
-map <C-l> <C-w>l <CR>
+"nmap cw :cw<CR>
+nmap cw <C-w>j
+nmap <C-h> <C-w>h
+nmap <C-j> <C-w>j
+nmap <C-k> <C-w>k
+nmap <C-l> <C-w>l
+
+set fo-=r
+set noautoindent

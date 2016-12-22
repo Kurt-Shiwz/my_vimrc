@@ -41,7 +41,7 @@ Plugin 'OmniCppComplete'
 Plugin 'kien/ctrlp.vim'
 Plugin 'grep.vim'
 Plugin 'tomasr/molokai'
-Plugin 'ervandew/supertab'
+" Plugin 'ervandew/supertab'
 Plugin 'bling/vim-airline'
 Plugin 'terryma/vim-multiple-cursors'
 " Plugin 'mbbill/echofunc'
@@ -140,8 +140,10 @@ let g:airline#extensions#whitespace#enabled = 0
 set laststatus=2
 let g:airline_theme='dark'
 
-:set tabstop=4
-:set expandtab
+set sw=4
+set tabstop=4
+set softtabstop=4
+"set expandtab
 autocmd FileType make set noexpandtab
 
 imap <C-b> <C-x><C-p>
@@ -159,3 +161,4 @@ nmap <C-l> <C-w>l
 
 set fo-=r
 set noautoindent
+set pastetoggle=<F10>

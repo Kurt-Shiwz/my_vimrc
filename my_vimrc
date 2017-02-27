@@ -35,7 +35,7 @@ set autoindent
 set sw=4
 set tabstop=4
 set softtabstop=4
-"set expandtab
+set expandtab
 autocmd FileType make set noexpandtab
 "当使用移动(shift)命令时移动的字符数
 set shiftwidth=4
@@ -50,7 +50,7 @@ set wildmode=longest:list,full
 "高亮搜索
 set hlsearch
 "显示状态栏
-"set laststatus=2
+set laststatus=2
 "显示尺标
 set ruler
 
@@ -60,6 +60,9 @@ set foldmethod=indent
 set foldlevel=100
 "启动 vim 时关闭折叠代码
 set nofoldenable
+
+"set mouse=i
+set mouse=""
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/vundle/
@@ -78,15 +81,16 @@ Plugin 'gmarik/vundle'
 "格式2：vim-scripts里面的仓库，直接打仓库名即可。
 Plugin 'scrooloose/nerdtree'
 Plugin 'Tagbar'
+Plugin 'rosenfeld/conque-term'
 Plugin 'fholgado/minibufexpl.vim'
 Plugin 'OmniCppComplete'
 Plugin 'kien/ctrlp.vim'
 Plugin 'grep.vim'
 Plugin 'tomasr/molokai'
-" Plugin 'ervandew/supertab'
-" Bundle 'Lokaltog/vim-easymotion'
-Plugin 'bling/vim-airline'
+Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
+" Bundle 'Lokaltog/vim-easymotion'
+"Plugin 'bling/vim-airline'
 " Plugin 'mbbill/echofunc'
 
 "格式3：非Github的Git仓库
@@ -97,7 +101,7 @@ filetype plugin indent on
 " Tagbar
 " autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.C call tagbar#OpenWindow
 let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
-let g:tagbar_autoclose=1
+let g:tagbar_autoclose=0
 let g:tagbar_width=30
 let g:tagbar_autofocus = 1
 map tb :TagbarToggle<CR>
@@ -129,9 +133,9 @@ let NERDTreeMinimalUI=1 "不显示帮助面板
 let NERDTreeDirArrows=0 "目录箭头 1 显示箭头  0传统+-|号
 
 " OmniCppComplete
-set nocp
-filetype plugin on
-set completeopt=menu,longest
+" set nocp
+" filetype plugin on
+" set completeopt=menu,longest
 
 "set cscopeprg=gtags-cscope
 set csprg=/usr/local/bin/gtags-cscope
@@ -173,10 +177,10 @@ let Grep_Skip_Files = '*.bak *~ tags .out'
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
 " airline
-let g:airline#extensions#whitespace#enabled = 0
-set laststatus=2
-set laststatus=4
-let g:airline_theme='dark'
+"let g:airline#extensions#whitespace#enabled = 0
+"set laststatus=2
+"set laststatus=4
+"let g:airline_theme='dark'
 
 imap <C-b> <C-x><C-p>
 map <C-Left> :bp<CR>
@@ -184,7 +188,6 @@ map <C-Right> :bn<CR>
 map <s-h> :bp<CR>
 map <s-l> :bn<CR>
 
-"nmap cw :cw<CR>
 nmap cw <C-w>j
 nmap <C-h> <C-w>h
 nmap <C-j> <C-w>j
@@ -194,3 +197,7 @@ nmap <C-l> <C-w>l
 set fo-=r
 set noautoindent
 set pastetoggle=<F10>
+set statusline=%h%w%r\ %f\ %m%=\ %B\ \|\ %{&ff}\ \|\ %{&fenc!=''?&fenc:&enc}\ \|\ %{&ft!=''?&ft:'none'}\ \|\ %{&tabstop}\ %8(%l,%v%)\ %10(%p%%,%P%)
+
+" ConqueTerm
+map ct :ConqueTermSplit bash<CR>

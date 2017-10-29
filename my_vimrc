@@ -10,11 +10,12 @@ if &term=="xterm"
 endif
 
 "显示文件的编码
-set encoding=utf-8
+"set encoding=utf-8
 "set encoding=prc
-set termencoding=&encoding
-set fileencoding=utf-8
-set fileencodings=utf-8,gbk,gb2312,gb18030
+"set termencoding=&encoding
+"set fileencoding=utf-8
+"set fileencodings=utf-8,gbk,gb2312,gb18030
+set fileencodings=gbk,gb2312,gb18030
 
 "选中的行会高亮
 set cursorline
@@ -26,6 +27,12 @@ set nocompatible
 set nu
 "命令打开文件类型检测功能，它相当于文件类型检测功能的开关
 filetype on
+autocmd BufRead *.cpp-bak set filetype=cpp
+autocmd BufRead *.h-bak set filetype=cpp
+autocmd BufRead COMAKE set filetype=python
+autocmd BufRead BCLOUD set filetype=python
+autocmd BufRead BCLOUD.* set filetype=python
+autocmd BufRead .*BCLOUD set filetype=python
 "filetype off                  " required
 "语法高亮
 syntax on
@@ -36,6 +43,7 @@ set sw=4
 set tabstop=4
 set softtabstop=4
 set expandtab
+"set shiftwidth=4
 autocmd FileType make set noexpandtab
 "当使用移动(shift)命令时移动的字符数
 set shiftwidth=4
@@ -50,9 +58,11 @@ set wildmode=longest:list,full
 "高亮搜索
 set hlsearch
 "显示状态栏
-set laststatus=2
+"set laststatus=2
 "显示尺标
 set ruler
+"行最大长度
+set cc=100
 
 " fold基于缩进或语法进行代码折叠
 set foldmethod=syntax
@@ -60,6 +70,15 @@ set foldmethod=indent
 set foldlevel=100
 "启动 vim 时关闭折叠代码
 set nofoldenable
+
+" file backup
+set noundofile
+set nobackup
+set noswapfile
+"set undofile
+"set undodir=~/.vim/undodir
+"set undolevels=1000 "maximum number of changes that can be undone
+"set undoreload=10000 "maximum number lines to save for undo on a buffer reload
 
 "set mouse=i
 set mouse=""
@@ -79,19 +98,29 @@ Plugin 'gmarik/vundle'
 "Plugin 'tpope/vim-fugitive'
 "Plugin 'tpope/vim-rails.git'
 "格式2：vim-scripts里面的仓库，直接打仓库名即可。
-Plugin 'scrooloose/nerdtree'
-Plugin 'Tagbar'
-Plugin 'rosenfeld/conque-term'
-Plugin 'fholgado/minibufexpl.vim'
+Plugin 'a.vim'
 Plugin 'OmniCppComplete'
-Plugin 'kien/ctrlp.vim'
 Plugin 'grep.vim'
-Plugin 'tomasr/molokai'
+Plugin 'scrooloose/nerdtree'
+Plugin 'majutsushi/tagbar'
+Plugin 'kien/ctrlp.vim'
+Plugin 'morhetz/gruvbox'
 Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
-" Bundle 'Lokaltog/vim-easymotion'
+Plugin 'zefei/vim-wintabs'
+Plugin 'Shougo/unite.vim'
+"Plugin 'Tagbar'
+"Plugin 'tomasr/molokai'
+"Plugin 'rosenfeld/conque-term'
+"Plugin 'ntpeters/vim-better-whitespace'
+"Plugin 'fholgado/minibufexpl.vim'
+"Plugin 'minibufexplorerpp'
+"Plugin 'gtags.vim'
+"Plugin 'mbbill/echofunc'
+"Plugin 'sjl/gundo.vim'
 "Plugin 'bling/vim-airline'
-" Plugin 'mbbill/echofunc'
+"Plugin 'othree/vim-autocomplpop'
+"Plugin 'vim-scripts/L9'
 
 "格式3：非Github的Git仓库
 "Plugin 'git://vim-latex.git.sourceforge.net/gitroot/vim-latex/vim-latex'
@@ -101,10 +130,12 @@ filetype plugin indent on
 " Tagbar
 " autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.C call tagbar#OpenWindow
 let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
+let g:tagbar_ctags_bin = '/usr/bin/ctags'
 let g:tagbar_autoclose=0
-let g:tagbar_width=30
+let g:tagbar_width=40
 let g:tagbar_autofocus = 1
 map tb :TagbarToggle<CR>
+"autocmd BufReadPost *.py,*.cpp,*.c,*.h,*.cc,*.cxx,*.hpp,*.lua call tagbar#autoopen()
 
 " MiniBufExplorer
 let g:miniBufExplMapWindowNavVim = 1
@@ -124,44 +155,53 @@ endfunction
 function! NERDTree_IsValid()
     return 1
 endfunction
- map nt :NERDTreeToggle<CR>
+map nt :NERDTreeToggle<CR>
 
 let NERDTreeQuitOnOpen=0 "打开文件时关闭树
 let NERDTreeShowBookmarks=1 "显示书签
-let NERDTreeChDirMode=2  "选中root即设置为当前目录
+let NERDTreeChDirMode=1  "选中root即设置为当前目录
 let NERDTreeMinimalUI=1 "不显示帮助面板
 let NERDTreeDirArrows=0 "目录箭头 1 显示箭头  0传统+-|号
+let NERDTreeWinSize=35
+let NERDTreeIgnore=['\.a$', '\.o', '\~$']
+
+" ctrlp
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*.o,*.a,*.out
 
 " OmniCppComplete
-" set nocp
-" filetype plugin on
-" set completeopt=menu,longest
+set nocp
+filetype plugin on
+set completeopt=menu,longest
 
-"set cscopeprg=gtags-cscope
-set csprg=/usr/local/bin/gtags-cscope
-"nmap ct :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
-nmap ct :!find . -name "*.[C h]" > gtags.files & gtags
-set nocst
+" gtags
+set cscopeprg=~/tool/gtags-cscope
+"set csprg=~/tool/gtags-cscope
+""nmap ct :!ctags -R --c++-kinds=+p --fields=+iaS --extra=+q .<CR>
+"nmap ct :!find . -name "*.[C c h]" -o -name "*.cpp" -o -name "*.hpp" -o -name "*.cc" > gtags.files & gtags
 nmap <C-[>s :cs find s <C-R>=expand("<cword>")<CR><CR>
 nmap <C-[>g :cs find g <C-R>=expand("<cword>")<CR><CR>
 nmap <C-[>c :cs find c <C-R>=expand("<cword>")<CR><CR>
 nmap <C-[>t :cs find t <C-R>=expand("<cword>")<CR><CR>
 nmap <C-[>i :cs find i <C-R>=expand("<cfile>")<CR><CR>
 nmap <C-[>d :cs find d <C-R>=expand("<cword>")<CR><CR>
-set csto=0
-" set cst
-set nocsverb
-set cscopequickfix=s-,c-,d-,i-,t-,e-
 if filereadable("GTAGS")
-    cs add GTA<C-w k>S
+    cs add GTAGS
 endif
-set csverb
+"set csto=0
+"set nocst
+"set cst
+"set nocsverb
+"set cscopequickfix=s-,c-,d-,i-,t-,e-
+"set csverb
 
 " color scheme
 set t_Co=256
-colo molokai
+"colo molokai
+colo gruvbox
 let g:molokai_original = 1
 let g:rehash256 = 1
+set bg=dark
+
 " hilight function name
 autocmd BufNewFile,BufRead * :syntax match cfunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>[^()]*)("me=e-2
 autocmd BufNewFile,BufRead * :syntax match cfunctions "\<[a-zA-Z_][a-zA-Z_0-9]*\>\s*("me=e-1
@@ -171,33 +211,78 @@ hi cfunctions ctermfg=81
 let g:ctrlp_match_window ='bottom,order:btt,min:1,max:15,results:100'
 
 " grep
-let Grep_Default_Filelist = '*.c *.cpp *.cc *.C *.h *.hpp *.asm'
-let Grep_Skip_Files = '*.bak *~ tags .out'
+let Grep_Default_Filelist = '*.c *.cpp *.cc *.C *.h *.hpp *.asm *.value *.conf *.template'
+let Grep_Skip_Files = '*.bak *~ tags *.out *.o'
 
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
+set statusline=%h%w%r\ %F\ %m%=\ %B\ \|\ %{&ff}\ \|\ %{&fenc!=''?&fenc:&enc}\ \|\ %{&ft!=''?&ft:'none'}\ \|\ %{&tabstop}\ %8(%l,%v%)\ %10(%p%%,%P%)
+set laststatus=2
+
 " airline
-"let g:airline#extensions#whitespace#enabled = 0
-"set laststatus=2
+"let g:airline#extensions#whitespace#enabled = 1
+"let g:airline#extensions#tabline#enabled = 1
 "set laststatus=4
 "let g:airline_theme='dark'
 
-imap <C-b> <C-x><C-p>
-map <C-Left> :bp<CR>
-map <C-Right> :bn<CR>
-map <s-h> :bp<CR>
-map <s-l> :bn<CR>
+set fo-=r
+set noautoindent
+set pastetoggle=<F10>
 
-nmap cw <C-w>j
+"vim-multiple-cursors
+let g:multi_cursor_next_key='<C-n>'
+let g:multi_cursor_prev_key='<C-m>'
+let g:multi_cursor_skip_key='<C-x>'
+let g:multi_cursor_quit_key='<Esc>'
+
+" ConqueTerm
+"map ct :ConqueTermVSplit bash<CR>
+
+" unite
+call unite#custom#source('buffer,file,file_rec', 'sorters', 'matcher_fuzzy')
+
+" remove space
+nmap <Space><Space> :%s/\s\+$//g<CR> :nohl<CR>
+
+imap <C-b> <C-x><C-p>
+"map <C-Left> :bp<CR>
+"map <C-Right> :bn<CR>
+"map <C-Left> :wintabs_previous<CR>
+"map <C-Right> :wintabs_next<CR>
+map <s-h> :WintabsPrevious<CR>
+map <s-l> :WintabsNext<CR>
+imap <s-Left> <Esc>:WintabsPrevious<CR>
+imap <s-Right> <Esc>:WintabsNext<CR>
+map <s-Left> :WintabsPrevious<CR>
+map <s-Right> :WintabsNext<CR>
+nmap bd :WintabsClose<CR>
+nmap bf :Unite buffer<CR>
+nmap fl :Unite file<CR>
+
 nmap <C-h> <C-w>h
 nmap <C-j> <C-w>j
 nmap <C-k> <C-w>k
 nmap <C-l> <C-w>l
 
-set fo-=r
-set noautoindent
-set pastetoggle=<F10>
-set statusline=%h%w%r\ %f\ %m%=\ %B\ \|\ %{&ff}\ \|\ %{&fenc!=''?&fenc:&enc}\ \|\ %{&ft!=''?&ft:'none'}\ \|\ %{&tabstop}\ %8(%l,%v%)\ %10(%p%%,%P%)
+nmap z :A<CR>
+nmap zz :AV<CR>
 
-" ConqueTerm
-map ct :ConqueTermSplit bash<CR>
+function Jump_func_up()
+    let line_a=line('.')
+    :execute "normal! ][\<s-%>"
+    let line_b=line('.')
+    if line_a <= line_b
+        :execute "normal! []\<s-%>"
+    endif
+endfunction
+function Jump_func_down()
+    let line_a=line('.')
+    :execute "normal! ][\<s-%>"
+    let line_b=line('.')
+    if line_a >= line_b
+        :execute "normal! ][][\<s-%>"
+    endif
+endfunction
+map [[ :call Jump_func_up()<CR>
+map ]] :call Jump_func_down()<CR>
+

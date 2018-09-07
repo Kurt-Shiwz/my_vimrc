@@ -14,11 +14,12 @@ endif
 "set encoding=prc
 "set termencoding=&encoding
 "set fileencoding=utf-8
-"set fileencodings=utf-8,gbk,gb2312,gb18030
-set fileencodings=gbk,gb2312,gb18030
+set fileencodings=utf-8,gbk,gb2312,gb18030
+"set fileencodings=gbk,gb2312,gb18030
 
 "选中的行会高亮
 set cursorline
+set cursorcolumn
 "搜索忽略大小写
 set ignorecase smartcase
 "关闭vi兼容模式
@@ -29,6 +30,8 @@ set nu
 filetype on
 autocmd BufRead *.cpp-bak set filetype=cpp
 autocmd BufRead *.h-bak set filetype=cpp
+autocmd BufRead *.cpp.bak set filetype=cpp
+autocmd BufRead *.h.bak set filetype=cpp
 autocmd BufRead COMAKE set filetype=python
 autocmd BufRead BCLOUD set filetype=python
 autocmd BufRead BCLOUD.* set filetype=python
@@ -63,6 +66,8 @@ set hlsearch
 set ruler
 "行最大长度
 set cc=100
+"删除任意字符
+set backspace=2
 
 " fold基于缩进或语法进行代码折叠
 set foldmethod=syntax
@@ -82,6 +87,8 @@ set noswapfile
 
 "set mouse=i
 set mouse=""
+"显示tab
+"set list
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/vundle/
@@ -109,6 +116,8 @@ Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'zefei/vim-wintabs'
 Plugin 'Shougo/unite.vim'
+Plugin 'fatih/vim-go'
+Plugin 'airblade/vim-gitgutter'
 "Plugin 'Tagbar'
 "Plugin 'tomasr/molokai'
 "Plugin 'rosenfeld/conque-term'
@@ -130,7 +139,6 @@ filetype plugin indent on
 " Tagbar
 " autocmd BufReadPost *.cpp,*.c,*.h,*.hpp,*.cc,*.cxx,*.C call tagbar#OpenWindow
 let g:tagbar_ctags_bin = '/usr/local/bin/ctags'
-let g:tagbar_ctags_bin = '/usr/bin/ctags'
 let g:tagbar_autoclose=0
 let g:tagbar_width=40
 let g:tagbar_autofocus = 1
@@ -138,15 +146,15 @@ map tb :TagbarToggle<CR>
 "autocmd BufReadPost *.py,*.cpp,*.c,*.h,*.cc,*.cxx,*.hpp,*.lua call tagbar#autoopen()
 
 " MiniBufExplorer
-let g:miniBufExplMapWindowNavVim = 1
-let g:miniBufExplMapWindowNavArrows = 1
-let g:miniBufExplMapCTabSwitchBufs = 1
-let g:miniBufExplModSelTarget = 1
-let g:miniBufExplMoreThanOne = 1
+"let g:miniBufExplMapWindowNavVim = 1
+"let g:miniBufExplMapWindowNavArrows = 1
+"let g:miniBufExplMapCTabSwitchBufs = 1
+"let g:miniBufExplModSelTarget = 1
+"let g:miniBufExplMoreThanOne = 1
 
 " NERDTree
 let g:NERDTree_title="[NERDTree]"
-"let g:winManagerWindowLayout="NERDTree|TagBar"
+let g:winManagerWindowLayout="NERDTree|TagBar"
 
 function! NERDTree_Start()
     exec 'NERDTree'
@@ -211,8 +219,10 @@ hi cfunctions ctermfg=81
 let g:ctrlp_match_window ='bottom,order:btt,min:1,max:15,results:100'
 
 " grep
-let Grep_Default_Filelist = '*.c *.cpp *.cc *.C *.h *.hpp *.asm *.value *.conf *.template'
-let Grep_Skip_Files = '*.bak *~ tags *.out *.o'
+let Grep_Default_Filelist = '*.c *.cpp *.C *.h *.hpp *.asm *.value *.conf *.template *.proto *.cc'
+let Grep_Skip_Files = '*~ tags *.out *.o *output'
+let Grep_Default_Options = '-rn'
+map bq :q<CR>
 
 let g:SuperTabDefaultCompletionType = "<c-n>"
 
@@ -286,3 +296,5 @@ endfunction
 map [[ :call Jump_func_up()<CR>
 map ]] :call Jump_func_down()<CR>
 
+map vr= :vertical resize +5<CR>
+map vr- :vertical resize -5<CR>

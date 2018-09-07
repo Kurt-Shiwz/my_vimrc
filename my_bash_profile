@@ -1,0 +1,142 @@
+# .bash_profile
+
+# Get the aliases and functions
+if [ -f ~/.bashrc ]; then
+	. ~/.bashrc
+fi
+
+unset USERNAME
+#export LC_CTYPE="zh_CN.UTF-8"
+
+export TMOUT=80000000
+export CLICOLOR=1
+export LSCOLORS=gxfxaxdxcxegedabagacad
+export LC_ALL=en_US.UTF-8  
+export LANG=en_US.UTF-8
+export PS1="`whoami`@`hostname` $ "
+#export PATH="$PATH:/Users/shiweize/Library/Python/2.7/bin"
+[ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
+
+###### work
+export TCMALLOC_SAMPLE_PARAMETER=524288
+export TCMALLOC_MAX_TOTAL_THREAD_CACHE_BYTES=2G
+export PATH="/Users/${USER}/project/gocode/tools/bin:/usr/local/opt/go@1.9/libexec/bin:$PATH"
+export GOROOT=/usr/local/opt/go@1.9/libexec
+export GOPATH=/Users/${USER}/project/gocode/tools
+#export GOBIN=/Users/${USER}/project/gocode/tools/bin
+
+# mac
+alias alias ta='exist=$(ps aux |fgrep "tmux -CC" |fgrep -v "grep");if [ -z ${exist} ];then tmux -CC;else tmux -CC attach;fi'
+alias clearopen="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain local -domain system -domain user"
+# work
+alias ip='hostname -i'
+alias fgrep='fgrep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
+alias k="_a(){ps aux |grep ${USER}|grep -v 'grep' |grep \"\$1\" |awk '{print \$2}' |xargs kill};_a"
+alias gl1="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
+alias gu='git reset HEAD'
+#alias p='_a(){project_name_tmp=$1;project_tmp=$(grep "^${project_name_tmp} " ~/project/tools/go_path |grep -o " .*");if [ -z "${project_tmp}" ]; then echo "dont find \"${project_name_tmp}\""; else project=${project_tmp:1};echo "export GOPATH=${project}";export GOPATH=${project};fi};_a'
+#alias c='_a(){dict_name_tmp=$1;dict_tmp=$(grep "^${dict_name_tmp} " ~/project/tools/dicts |grep -o " .*");if [ -z "${dict_tmp}" ]; then echo "dont find \"${dict_name_tmp}\""; else dict=${dict_tmp:1};echo "cd ${dict}";cd ${dict};fi};_a'
+#alias cl='cat ~/project/tools/dicts'
+#alias hp='export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;echo "export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;"'
+#alias uhp='unset http_proxy;unset https_proxy;echo "unset http_proxy;unset https_proxy;"'
+
+# jump to dict
+c () {
+    # conf format
+    # key value //dont use tab
+    conf_file=~/project/tools/dicts
+    req_tmp="$1"
+    resp_tmp="$(grep "^${req_tmp} " ${conf_file} |grep -o " .*")"
+    if [ -z "${resp_tmp}" ]; then
+        echo "dont find \"${req_tmp}\" in ${conf_file}"
+    else
+        resp=${resp_tmp:1}
+        # command
+        echo "cd ${resp}"
+        cd ${resp}
+    fi
+}
+cl () {
+    # conf format
+    # key value //dont use tab
+    conf_file=~/project/tools/dicts
+    echo "jump path:"
+    cat ${conf_file}
+}
+
+## proxy
+hp () {
+    export http_proxy="http://127.0.0.1:1081"
+    export https_proxy="http://127.0.0.1:1081"
+    echo "open http proxy, port:1081"
+}
+uhp () {
+    unset http_proxy
+    unset https_proxy 
+    echo "close http proxy, port:1081"
+}
+
+## go path
+p () {
+    # conf format
+    # key value //dont use tab
+    conf_file=~/project/tools/go_path
+    req_tmp="$1"
+    resp_tmp="$(grep "^${req_tmp} " ${conf_file} |grep -o " .*")"
+    if [ -z "${resp_tmp}" ]; then
+        echo "dont find \"${req_tmp}\" in ${conf_file}"
+    else
+        resp=${resp_tmp:1}
+        # command
+        echo "export GOPATH=${resp}"
+        export GOPATH=${resp}
+    fi
+}
+
+pl () {
+    # conf format
+    # key value //dont use tab
+    conf_file=~/project/tools/go_path
+    echo "go project path"
+    cat ${conf_file}
+}
+
+# send file / recive file
+ss () {
+    files="$1"
+    if [ -z ${files} ]; then
+        echo "no files"
+        exit
+    fi
+    rsync -arvz --filter="merge /Users/${USER}/project/tools/rsync-filter" ${files} 139.129.96.132:/home/${USER}/tmp
+}
+
+sz () {
+    files="$1"
+    if [ -z ${files} ]; then
+        echo "no files"
+        exit
+    fi
+    rsync -arvz --filter="merge /Users/${USER}/project/tools/rsync-filter" 139.129.96.132:${files} .
+}
+
+## run notifyloop
+notify_check() {
+    exist_notifyloop=`ps aux |grep ${USER} |grep "notifyloop" |grep -v "grep" |wc -l |sed 's/ //g'`
+    exist_notifywait=`ps aux |grep ${USER} |grep "notifywait" |grep -v "grep" |wc -l |sed 's/ //g'`
+    #echo `ps aux |grep ${USER} |grep "notifyloop" |grep -v "grep" `
+    #echo `ps aux |grep ${USER} |grep "notifywait" |grep -v "grep" `
+    if [ ${exist_notifyloop} -gt 0 ]; then
+        echo "notifyloop already run"
+        return
+    elif [ ${exist_notifywait} -gt 0 ]; then
+        echo "notifywait run, kill notifywait and run notifyloop"
+        pid_=`ps aux |grep ${USER} |grep "notifywait" |grep -v "grep" |awk '{print $2}'`
+        kill ${pid_}
+    fi
+    echo "will run notifyloop: sh ~/project/tools/go_project_monitor.sh -r"
+    sh ~/project/tools/go_project_monitor.sh -r
+}
+alias nf='sh ~/project/tools/go_project_monitor.sh -f'
+notify_check
+

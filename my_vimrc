@@ -36,6 +36,7 @@ autocmd BufRead COMAKE set filetype=python
 autocmd BufRead BCLOUD set filetype=python
 autocmd BufRead BCLOUD.* set filetype=python
 autocmd BufRead .*BCLOUD set filetype=python
+autocmd filetype crontab setlocal nobackup nowritebackup
 "filetype off                  " required
 "语法高亮
 syntax on
@@ -116,8 +117,8 @@ Plugin 'ervandew/supertab'
 Plugin 'terryma/vim-multiple-cursors'
 Plugin 'zefei/vim-wintabs'
 Plugin 'Shougo/unite.vim'
-Plugin 'fatih/vim-go'
 Plugin 'airblade/vim-gitgutter'
+"Plugin 'fatih/vim-go'
 "Plugin 'Tagbar'
 "Plugin 'tomasr/molokai'
 "Plugin 'rosenfeld/conque-term'
@@ -143,6 +144,34 @@ let g:tagbar_autoclose=0
 let g:tagbar_width=40
 let g:tagbar_autofocus = 1
 map tb :TagbarToggle<CR>
+let g:tagbar_type_go = {
+	\ 'ctagstype' : 'go',
+	\ 'kinds'     : [
+		\ 'p:package',
+		\ 'i:imports:1',
+		\ 'c:constants',
+		\ 'v:variables',
+		\ 't:types',
+		\ 'n:interfaces',
+		\ 'w:fields',
+		\ 'e:embedded',
+		\ 'm:methods',
+		\ 'r:constructor',
+		\ 'f:functions'
+	\ ],
+	\ 'sro' : '.',
+	\ 'kind2scope' : {
+		\ 't' : 'ctype',
+		\ 'n' : 'ntype'
+	\ },
+	\ 'scope2kind' : {
+		\ 'ctype' : 't',
+		\ 'ntype' : 'n'
+	\ },
+	\ 'ctagsbin'  : 'gotags',
+	\ 'ctagsargs' : '-sort -silent'
+\ }
+
 "autocmd BufReadPost *.py,*.cpp,*.c,*.h,*.cc,*.cxx,*.hpp,*.lua call tagbar#autoopen()
 
 " MiniBufExplorer
@@ -219,7 +248,7 @@ hi cfunctions ctermfg=81
 let g:ctrlp_match_window ='bottom,order:btt,min:1,max:15,results:100'
 
 " grep
-let Grep_Default_Filelist = '*.c *.cpp *.C *.h *.hpp *.asm *.value *.conf *.template *.proto *.cc'
+let Grep_Default_Filelist = '*.c *.cpp *.C *.h *.hpp *.asm *.value *.conf *.template *.proto *.cc *.go *.xml'
 let Grep_Skip_Files = '*~ tags *.out *.o *output'
 let Grep_Default_Options = '-rn'
 map bq :q<CR>

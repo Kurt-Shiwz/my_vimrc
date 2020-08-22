@@ -17,28 +17,41 @@ export PS1="`whoami`@`hostname` $ "
 #export PATH="$PATH:/Users/shiweize/Library/Python/2.7/bin"
 [ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
 
-###### work
-export TCMALLOC_SAMPLE_PARAMETER=524288
-export TCMALLOC_MAX_TOTAL_THREAD_CACHE_BYTES=2G
-export PATH="/Users/${USER}/project/gocode/tools/bin:/usr/local/opt/go@1.9/libexec/bin:$PATH"
-export GOROOT=/usr/local/opt/go@1.9/libexec
-export GOPATH=/Users/${USER}/project/gocode/tools
-#export GOBIN=/Users/${USER}/project/gocode/tools/bin
+# chrome 双指后退
+#defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool FALSE
+# sudo mount -uw /
+# git remote prune origin
 
-# mac
+###### alias
 alias alias ta='exist=$(ps aux |fgrep "tmux -CC" |fgrep -v "grep");if [ -z ${exist} ];then tmux -CC;else tmux -CC attach;fi'
 alias clearopen="/System/Library/Frameworks/CoreServices.framework/Versions/A/Frameworks/LaunchServices.framework/Versions/A/Support/lsregister -kill -r -domain local -domain system -domain user"
-# work
 alias ip='hostname -i'
 alias fgrep='fgrep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn}'
 alias k="_a(){ps aux |grep ${USER}|grep -v 'grep' |grep \"\$1\" |awk '{print \$2}' |xargs kill};_a"
 alias gl1="git log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all"
 alias gu='git reset HEAD'
+alias gul='git reset --hard HEAD^'
+alias gull='git reset --hard HEAD^; git pull'
 #alias p='_a(){project_name_tmp=$1;project_tmp=$(grep "^${project_name_tmp} " ~/project/tools/go_path |grep -o " .*");if [ -z "${project_tmp}" ]; then echo "dont find \"${project_name_tmp}\""; else project=${project_tmp:1};echo "export GOPATH=${project}";export GOPATH=${project};fi};_a'
 #alias c='_a(){dict_name_tmp=$1;dict_tmp=$(grep "^${dict_name_tmp} " ~/project/tools/dicts |grep -o " .*");if [ -z "${dict_tmp}" ]; then echo "dont find \"${dict_name_tmp}\""; else dict=${dict_tmp:1};echo "cd ${dict}";cd ${dict};fi};_a'
 #alias cl='cat ~/project/tools/dicts'
 #alias hp='export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;echo "export http_proxy=http://127.0.0.1:1081;export https_proxy=http://127.0.0.1:1081;"'
 #alias uhp='unset http_proxy;unset https_proxy;echo "unset http_proxy;unset https_proxy;"'
+# alias vim="vim -u ~/.vimrc_shiwz"
+
+###### export
+export PATH="/usr/local/opt/llvm/bin:$PATH"
+export TCMALLOC_SAMPLE_PARAMETER=524288
+export TCMALLOC_MAX_TOTAL_THREAD_CACHE_BYTES=2G
+export PATH="/Users/${USER}/project/gocode/tools/bin:/usr/local/opt/go@1.12/libexec/bin:$PATH"
+export GOROOT=/usr/local/opt/go/libexec
+export GOPROXY=https://goproxy.cn
+export GO111MODULE=auto
+export GOPRIVATE=*.qutoutiao.net
+#export HOMEBREW_BOTTLE_DOMAIN=https://mirrors.aliyun.com/homebrew/homebrew-bottles
+export PATH="/usr/local/opt/llvm/bin:$PATH"
+export PATH="/Users/${USER}/go/bin:$PATH"
+#export GOBIN=/Users/${USER}/project/gocode/tools/bin
 
 # jump to dict
 c () {
@@ -62,6 +75,15 @@ cl () {
     conf_file=~/project/tools/dicts
     echo "jump path:"
     cat ${conf_file}
+}
+
+fq () {
+    cd $HOME/project/tools/trojan 
+    nohup ./trojan &
+}
+
+cfq () {
+    ps aux |grep trojan |grep -v grep |awk '{print $2}' |xargs kill
 }
 
 ## proxy
@@ -111,7 +133,7 @@ ss () {
     rsync -arvz --filter="merge /Users/${USER}/project/tools/rsync-filter" ${files} 139.129.96.132:/home/${USER}/tmp
 }
 
-sz () {
+sr () {
     files="$1"
     if [ -z ${files} ]; then
         echo "no files"
@@ -138,5 +160,5 @@ notify_check() {
     sh ~/project/tools/go_project_monitor.sh -r
 }
 alias nf='sh ~/project/tools/go_project_monitor.sh -f'
-notify_check
+#notify_check
 
